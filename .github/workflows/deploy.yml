@@ -19,9 +19,12 @@ jobs:
         env: ${{ github.event_name == 'workflow_dispatch'
                 && github.event.inputs.environment != ''
                 && fromJson(format('["{0}"]', github.event.inputs.environment))
-                || fromJson('["dev","uat","prd"]') }}
+                || fromJson('["dev"]') }}
     environment: ${{ matrix.env }}
 
+    env:
+      PROJECT_FILE: src/Core8Api/Core8Api.csproj   # <-- update to your actual path
+      PUBLISH_DIR: build
     permissions:
       id-token: write
       contents: read
@@ -36,8 +39,9 @@ jobs:
 
       - name: Build
         run: |
-          dotnet restore
-          dotnet publish -c Release -o build/
+          dotnet restore "$PROJECT_FILE"
+          dotnet publish "$PROJECT_FILE" -c Release -o "$PUBLISH_DIR" /p:UseAppHost=false
+
 
       - name: Azure Login (OIDC)
         uses: azure/login@v2
@@ -50,4 +54,4 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ vars.AZURE_WEBAPP_NAME }}
-          package: ./build
+          package: ${{ env.PUBLISH_DIR }}
