@@ -23,7 +23,7 @@ jobs:
     environment: ${{ matrix.env }}
 
     env:
-      PROJECT_FILE: src/Core8Api/Core8Api.csproj   # <-- update to your actual path
+      PROJECT_FILE: src\example-api\example-api.sln  # <-- update to your actual path
       PUBLISH_DIR: build
     permissions:
       id-token: write
