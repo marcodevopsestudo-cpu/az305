@@ -10,6 +10,6 @@ common_tags = {
 
 environments = {
   dev = { location = "brazilsouth", appservice_sku = "B1",  rbac_scope = "resource_group" }
-  uat = { location = "brazilsouth", appservice_sku = "P1v3" }
-  prd = { location = "brazilsouth", appservice_sku = "P1v3" }
+  # uat = { location = "brazilsouth", appservice_sku = "P1v3" }
+  # prd = { location = "brazilsouth", appservice_sku = "P1v3" }
 }
