@@ -13,15 +13,17 @@ on:
 
 jobs:
   deploy:
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        env: [ dev, uat, prd ]
-    if: github.event_name == 'push' || inputs.environment == matrix.env
-    runs-on: ubuntu-latest
+        env: ${{ github.event_name == 'workflow_dispatch'
+                && github.event.inputs.environment != ''
+                && fromJson(format('["{0}"]', github.event.inputs.environment))
+                || fromJson('["dev","uat","prd"]') }}
     environment: ${{ matrix.env }}
 
     permissions:
-      id-token: write   # required for OIDC
+      id-token: write
       contents: read
 
     steps:
