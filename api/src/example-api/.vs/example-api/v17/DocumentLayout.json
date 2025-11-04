@@ -1,9 +1,9 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\marco\\Documents\\GitHub\\az305\\api\\src\\example-api\\",
+  "WorkspaceRootPath": "C:\\Users\\marco\\OneDrive\\Documentos\\GitHub\\az305\\api\\src\\example-api\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{B94A0013-F9B4-4B16-8DAA-FD0283BFDA60}|example\\example.csproj|c:\\users\\marco\\documents\\github\\az305\\api\\src\\example-api\\example\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{B94A0013-F9B4-4B16-8DAA-FD0283BFDA60}|example\\example.csproj|c:\\users\\marco\\onedrive\\documentos\\github\\az305\\api\\src\\example-api\\example\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B94A0013-F9B4-4B16-8DAA-FD0283BFDA60}|example\\example.csproj|solutionrelative:example\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -20,11 +20,11 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\marco\\Documents\\GitHub\\az305\\api\\src\\example-api\\example\\Program.cs",
+              "DocumentMoniker": "C:\\Users\\marco\\OneDrive\\Documentos\\GitHub\\az305\\api\\src\\example-api\\example\\Program.cs",
               "RelativeDocumentMoniker": "example\\Program.cs",
-              "ToolTip": "C:\\Users\\marco\\Documents\\GitHub\\az305\\api\\src\\example-api\\example\\Program.cs",
+              "ToolTip": "C:\\Users\\marco\\OneDrive\\Documentos\\GitHub\\az305\\api\\src\\example-api\\example\\Program.cs",
               "RelativeToolTip": "example\\Program.cs",
-              "ViewState": "AgIAABYAAAAAAAAAAAAAwB8AAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAABYAAAAAAAAAAAAAwCQAAAAvAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-03T03:57:05.044Z",
               "EditorCaption": ""

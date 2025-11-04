@@ -34,6 +34,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Optional health
-app.MapGet("/health", () => Results.Ok("OK"));
+app.MapGet("/healthZ", () => Results.Ok("OK"));
 
 app.Run();
