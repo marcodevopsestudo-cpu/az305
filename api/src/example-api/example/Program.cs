@@ -12,6 +12,6 @@ app.UseSwaggerUI(o =>
     o.RoutePrefix = "swagger"; // ui at /swagger
 });
 
-app.MapGet("/health", () => Results.Ok("OK"));
+app.MapGet("/healthz", () => Results.Ok("OK"));
 
 app.Run();
