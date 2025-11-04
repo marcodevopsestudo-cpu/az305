@@ -1,56 +1,48 @@
-# -------------------------------------------------------------------
-# Terraform .gitignore
-# -------------------------------------------------------------------
-
+# --- Terraform ---
 # Local .terraform directories
 **/.terraform/*
+**/.terraform.lock.hcl
 
 # Terraform state files
 *.tfstate
 *.tfstate.*
-crash.log
-crash.*.log
+terraform.tfstate.backup
 
-# Exclude backup and override files
-*.tfvars.backup
-*.tfvars.json.backup
-*.tfvars.old
+# Crash logs
+crash.log
+
+# Variable files containing secrets
+*.tfvars
+*.tfvars.json
+terraform.tfvars
+
+# Override files (local-only)
 override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
 
-# Sensitive variable files
-*.tfvars
-*.tfvars.json
-secret.auto.tfvars
-*.auto.tfvars
-*.auto.tfvars.json
-
-# Local environment or config files
-.terraformrc
-terraform.rc
-
-# Lock file (may be optional)
-.terraform.lock.hcl
-
-# Ignore plan output files
-*.plan
+# Plan files
+*.tfplan
 plan.out
 
-# Ignore editor / OS junk
-.DS_Store
-Thumbs.db
+# Sensitive output logs
+*.log
+
+# Module & plugin archives
+*.zip
+*.tar.gz
+
+# IDE/editor specific
 .vscode/
 .idea/
 *.swp
-*.swo
-*.bak
+.DS_Store
+Thumbs.db
 
-# Python or Node cache if used for automation scripts
-__pycache__/
-node_modules/
+# OS junk
+ehthumbs.db
+desktop.ini
 
-# Logs
-*.log
-logs/
+# Lock files (optional — uncomment if using Terraform Cloud)
+# .terraform.lock.hcl
