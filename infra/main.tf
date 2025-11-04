@@ -1,65 +1,134 @@
-# --------------------------------------------------------
-# Root Orchestrator (main.tf)
-# --------------------------------------------------------
-# Orchestrates dev/uat/prd by calling the env_stack module with for_each.
-# Configures providers and aggregates outputs for GitHub Environments.
-# --------------------------------------------------------
+########################################
+# Resource Group
+########################################
+module "rg" {
+  source   = "./modules/rg"
+  location = var.location
+  tags     = var.tags
+  name     = "${var.prefix}-dev-rg"
+}
+########################################
+# NETWORKING (for_each: VNet + Subnets + NSGs)
+########################################
+module "networking" {
+  source              = "./modules/networking"
+  name_prefix         = var.prefix
+  location            = var.location
+  resource_group_name = module.rg.name
+  tags                = var.tags
 
-terraform {
-  required_version = ">= 1.6.0"
-  required_providers {
-    azurerm = { source = "hashicorp/azurerm", version = "~> 3.114" }
-    azuread = { source = "hashicorp/azuread", version = "~> 2.50" }
+  vnet_address_space = var.vnet_address_space
+
+  subnets = {
+    "app-snet" = {
+      cidr                                 = var.subnets_cidrs.app
+      delegate_to_appservice               = true
+      enable_private_endpoint_policies     = false
+      enable_private_link_service_policies = false
+
+      nsg_rules = {
+        AllowOutboundInternet = {
+          priority                   = 100
+          direction                  = "Outbound"
+          access                     = "Allow"
+          protocol                   = "*"
+          source_port_range          = "*"
+          destination_port_range     = "*"
+          source_address_prefix      = "*"
+          destination_address_prefix = "Internet"
+        }
+      }
+    }
+
+    "data-snet" = {
+      cidr                                 = var.subnets_cidrs.data
+      delegate_to_appservice               = false
+      enable_private_endpoint_policies     = false
+      enable_private_link_service_policies = false
+
+      nsg_rules = {
+        DenyAllInbound = {
+          priority                   = 100
+          direction                  = "Inbound"
+          access                     = "Deny"
+          protocol                   = "*"
+          source_port_range          = "*"
+          destination_port_range     = "*"
+          source_address_prefix      = "*"
+          destination_address_prefix = "*"
+        }
+      }
+    }
+
+    "privatelink-snet" = {
+      cidr                                 = var.subnets_cidrs.pe
+      delegate_to_appservice               = false
+      enable_private_endpoint_policies     = true
+      enable_private_link_service_policies = true
+
+      nsg_rules = {
+        AllowVNetOutbound = {
+          priority                   = 100
+          direction                  = "Outbound"
+          access                     = "Allow"
+          protocol                   = "*"
+          source_port_range          = "*"
+          destination_port_range     = "*"
+          source_address_prefix      = "VirtualNetwork"
+          destination_address_prefix = "VirtualNetwork"
+        }
+      }
+    }
   }
 }
 
-provider "azurerm" { 
-  features {} 
-  }
-provider "azuread" {}
-
-data "azurerm_client_config" "current" {}
-data "azurerm_subscription"  "current" {}
-
-module "env" {
-  source  = "./modules/env_stack"
-  for_each = var.environments
-
-  location         = each.value.location
-  app_name_prefix  = var.app_name_prefix
-  env_name         = each.key
-  appservice_sku   = each.value.appservice_sku
-  tags             = merge(var.common_tags, { env = each.key })
-
-  github_org       = var.github_org
-  github_repo      = var.github_repo
-  github_subject   = "repo:${var.github_org}/${var.github_repo}:environment:${each.key}"
-  github_repo_ref  = each.key
-
-  rbac_scope       = coalesce(each.value.rbac_scope, "resource_group")
+########################################
+# APP (App Service Plan + Web App .NET 8)
+########################################
+########################################
+# APP (App Service Plan + Web App .NET 8)
+########################################
+module "app" {
+  source                     = "./modules/app"
+  name_prefix                = var.prefix
+  location                   = var.location
+  resource_group_name        = module.rg.name
+  tags                       = var.tags
+  plan_sku_name              = var.plan_sku_name
+  vnet_integration_subnet_id = module.networking.subnet_ids["app-snet"]
 }
 
-output "env_webapp_names" {
-  value       = { for k, m in module.env : k => m.webapp_name }
-  description = "Map of environment names to Web App names."
+
+########################################
+# OIDC (App Registration + Federated Credential)
+########################################
+# Provide default OIDC subjects if none passed (branch main + environment dev)
+locals {
+  default_oidc_subjects = [
+    "repo:${var.github_owner}/${var.github_repo}:ref:refs/heads/${var.github_branch}",
+    "repo:${var.github_owner}/${var.github_repo}:environment:dev"
+  ]
+
+  effective_oidc_subjects = length(var.oidc_subjects) > 0 ? var.oidc_subjects : local.default_oidc_subjects
 }
 
-output "env_rg_names" {
-  value       = { for k, m in module.env : k => m.resource_group_name }
-  description = "Map of environment names to Resource Group names."
+module "oidc" {
+  source        = "./modules/oidc"
+  name_prefix   = var.prefix
+  github_owner  = var.github_owner
+  github_repo   = var.github_repo
+  github_branch = var.github_branch
+  oidc_subjects = local.effective_oidc_subjects
 }
 
-output "azure_tenant_id" {
-  value       = data.azurerm_client_config.current.tenant_id
-  description = "Tenant ID for Azure login in GitHub."
-}
+########################################
+# RBAC (Contributor no RG para o SP do OIDC)
+########################################
+module "rbac" {
+  source               = "./modules/rbac"
+  scope_id             = module.rg.id
+  principal_object_id  = module.oidc.service_principal_object_id
+  role_definition_name = "Contributor"
 
-output "azure_subscription_id" {
-  value       = data.azurerm_subscription.current.subscription_id
-  description = "Subscription ID for Azure login in GitHub."
-}
-
-output "env_azure_client_ids" {
-  value       = { for k, m in module.env : k => m.azure_client_id }
-  description = "Map env -> Azure AD application client ID (OIDC)."
+  depends_on = [module.oidc]
 }

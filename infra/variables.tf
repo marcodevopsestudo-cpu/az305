@@ -1,33 +1,56 @@
-# --------------------------------------------------------
-# Global Variables for Multi-Environment Deployment
-# --------------------------------------------------------
+variable "subscription_id" { type = string }
+variable "tenant_id" { type = string }
 
-variable "app_name_prefix" {
-  type        = string
-  description = "Base name prefix used for all Web App and resource names."
+variable "prefix" {
+  type    = string
+  default = "az305-api"
+}
+variable "location" {
+  type    = string
+  default = "brazilsouth"
 }
 
-variable "github_org" {
-  type        = string
-  description = "GitHub organization name where the repo is located."
+variable "tags" {
+  type = map(string)
+  default = {
+    environment = "dev"
+    managed_by  = "terraform"
+  }
 }
 
-variable "github_repo" {
-  type        = string
-  description = "GitHub repository name containing the .NET 8 API."
+variable "vnet_address_space" {
+  type    = list(string)
+  default = ["10.20.0.0/16"]
 }
 
-variable "common_tags" {
-  type        = map(string)
-  default     = {}
-  description = "Key-value tags to apply to all Azure resources."
+# Only CIDRs; rules are defined inline in main.tf for clarity
+variable "subnets_cidrs" {
+  type = object({
+    app  = string
+    data = string
+    pe   = string
+  })
+  default = {
+    app  = "10.20.1.0/24"
+    data = "10.20.2.0/24"
+    pe   = "10.20.3.0/24"
+  }
 }
 
-variable "environments" {
-  description = "Map of environments with deployment settings (dev, uat, prd)."
-  type = map(object({
-    location       = string
-    appservice_sku = string
-    rbac_scope     = optional(string)
-  }))
+variable "plan_sku_name" {
+  type    = string
+  default = "S1"
+}
+
+variable "github_owner" { type = string }
+variable "github_repo" { type = string }
+variable "github_branch" {
+  type    = string
+  default = "main"
+}
+
+# Optional: allow multiple OIDC subjects (branch and/or environments)
+variable "oidc_subjects" {
+  type    = list(string)
+  default = []
 }
