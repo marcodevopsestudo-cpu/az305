@@ -48,10 +48,10 @@ resource "azuread_service_principal" "gha" {
 }
 
 resource "azuread_application_federated_identity_credential" "gha" {
-  display_name          = "github-${var.github_repo_ref}"
-  audiences             = ["api://AzureADTokenExchange"]
-  issuer                = "https://token.actions.githubusercontent.com"
-  subject               = var.github_subject
+  display_name   = "github-${var.github_repo_ref}"
+  audiences      = ["api://AzureADTokenExchange"]
+  issuer         = "https://token.actions.githubusercontent.com"
+  subject        = var.github_subject
   application_id = azuread_application.gha.id
 }
 

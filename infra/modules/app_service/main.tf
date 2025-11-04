@@ -22,5 +22,5 @@ resource "azurerm_linux_web_app" "this" {
   app_settings = var.app_settings
 }
 
-output "id"   { value = azurerm_linux_web_app.this.id }
+output "id" { value = azurerm_linux_web_app.this.id }
 output "name" { value = azurerm_linux_web_app.this.name }

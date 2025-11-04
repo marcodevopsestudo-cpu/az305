@@ -1,9 +1,8 @@
 # --- Terraform ---
-# Local .terraform directories
 **/.terraform/*
 **/.terraform.lock.hcl
 
-# Terraform state files
+# State
 *.tfstate
 *.tfstate.*
 terraform.tfstate.backup
@@ -11,29 +10,29 @@ terraform.tfstate.backup
 # Crash logs
 crash.log
 
-# Variable files containing secrets
+# Sensitive vars
 *.tfvars
 *.tfvars.json
 terraform.tfvars
 
-# Override files (local-only)
+# Overrides
 override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
 
-# Plan files
+# Plans
 *.tfplan
 plan.out
 
-# Sensitive output logs
+# Logs
 *.log
 
-# Module & plugin archives
+# Archives
 *.zip
 *.tar.gz
 
-# IDE/editor specific
+# IDE
 .vscode/
 .idea/
 *.swp
@@ -43,6 +42,3 @@ Thumbs.db
 # OS junk
 ehthumbs.db
 desktop.ini
-
-# Lock files (optional — uncomment if using Terraform Cloud)
-# .terraform.lock.hcl
