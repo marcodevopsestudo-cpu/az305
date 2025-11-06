@@ -50,8 +50,20 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Deploy to Azure WebApp
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: ${{ vars.AZURE_WEBAPP_NAME }}
-          package: ${{ env.PUBLISH_DIR }}
+      - name: ACR login
+        run: |
+          az acr login --name ${{ secrets.ACR_NAME }}
+
+      - name: Build & push
+        run: |
+          IMAGE=${{ secrets.ACR_NAME }}.azurecr.io/myapi:${{ github.sha }}
+          docker build -t $IMAGE .
+          docker push $IMAGE
+          echo "IMAGE=$IMAGE" >> $GITHUB_ENV
+      - name: Point Web App to new image
+        run: |
+          az webapp config container set \
+            --resource-group ${{ secrets.RG }} \
+            --name my-private-webapp \
+            --docker-custom-image-name $IMAGE \
+            --docker-registry-server-url https://${{ secrets.ACR_NAME }}.azurecr.io
