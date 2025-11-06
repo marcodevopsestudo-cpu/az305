@@ -54,6 +54,9 @@ jobs:
         run: |
           az acr login --name ${{ secrets.ACR_NAME }}
 
+      - name: Get ACR loginServer
+        run: echo "LOGIN=${{ vars.ACR_LOGIN_SERVER }}" >> $GITHUB_ENV
+        # (set ACR_LOGIN_SERVER as an org/repo variable = module.acr.login_server)
       - name: Build & push
         run: |
           IMAGE=${{ secrets.ACR_NAME }}.azurecr.io/myapi:${{ github.sha }}
