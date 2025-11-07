@@ -1,4 +1,5 @@
 
+data "azurerm_client_config" "current" {}
 
 locals{
   acr_name                   = "${var.prefix}acr"
@@ -142,7 +143,7 @@ module "oidc" {
 ########################################
 module "rbac" {
   source               = "./modules/rbac"
-  scope_id             = module.rg.id
+  scope_id             =  "/subscriptions/${data.azurerm_client_config.current.subscription_id}"
   principal_object_id  = module.oidc.service_principal_object_id
   role_definition_name = "Contributor"
   depends_on = [module.oidc]

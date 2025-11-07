@@ -3,7 +3,7 @@ variable "tenant_id" { type = string }
 
 variable "prefix" {
   type    = string
-  default = "az305-api"
+  default = "az305"
 }
 variable "location" {
   type    = string
