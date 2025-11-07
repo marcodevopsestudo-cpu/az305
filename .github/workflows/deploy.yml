@@ -22,12 +22,13 @@ jobs:
                 || fromJson('["dev"]') }}
     environment: ${{ matrix.env }}
 
-    env:
-      PROJECT_FILE: api\src\example-api\example\example.csproj  # <-- update to your actual path
-      PUBLISH_DIR: build
     permissions:
       id-token: write
       contents: read
+
+    env:
+      PROJECT_FILE: api/src/example-api/example/example.csproj
+      PUBLISH_DIR: build
 
     steps:
       - uses: actions/checkout@v4
@@ -42,7 +43,6 @@ jobs:
           dotnet restore "$PROJECT_FILE"
           dotnet publish "$PROJECT_FILE" -c Release -o "$PUBLISH_DIR" /p:UseAppHost=false
 
-
       - name: Azure Login (OIDC)
         uses: azure/login@v2
         with:
@@ -56,13 +56,14 @@ jobs:
 
       - name: Get ACR loginServer
         run: echo "LOGIN=${{ vars.ACR_LOGIN_SERVER }}" >> $GITHUB_ENV
-        # (set ACR_LOGIN_SERVER as an org/repo variable = module.acr.login_server)
+
       - name: Build & push
         run: |
           IMAGE=${{ secrets.ACR_NAME }}.azurecr.io/myapi:${{ github.sha }}
           docker build -t $IMAGE .
           docker push $IMAGE
           echo "IMAGE=$IMAGE" >> $GITHUB_ENV
+
       - name: Point Web App to new image
         run: |
           az webapp config container set \

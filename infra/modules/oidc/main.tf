@@ -9,7 +9,7 @@ resource "azuread_service_principal" "sp" {
 resource "azuread_application_federated_identity_credential" "fic" {
   for_each       = toset(var.oidc_subjects)
   application_id = azuread_application.app.id
-
+  
   # Prefixa com "gha-" e troca qualquer caractere inválido por "-"
   display_name = replace(replace("gha-${each.value}", ":", "-"), "/", "-")
   issuer       = "https://token.actions.githubusercontent.com"
